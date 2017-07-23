@@ -23,7 +23,8 @@ options sunrpc tcp_slot_table_entries=128
 * Increase nfs rnode cache - __nfs:nrnode__
 * __nfs:nfs3_max_transfer_size / nfs:nfs4_max_transfer_size__
 
-
+## I/O Diagram
+![alt text](https://3.bp.blogspot.com/-9okxlkow_kg/WQ7efP7B6kI/AAAAAAAAThw/chM14o4hYDUX7hR35vHQKqX2ZWnWqva4wCLcB/s1600/Selection_010.png)
 
 ## Network
 ### Linux example
