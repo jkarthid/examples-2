@@ -1,0 +1,4 @@
+echo "*sd_state::walk softstate | ::print -d struct sd_lun un_sd un_f_disksort_disabled un_f_suppress_cache_flush un_throttle un_min_throttle un_cmd_timeout un_retry_count un_victim_retry_count" | sudo mdb -k
+
+
+

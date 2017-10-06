@@ -1,0 +1,19 @@
+PROTO PROPERTY              PERM CURRENT      PERSISTENT   DEFAULT      POSSIBLE
+tcp   cong_default          rw   newreno      --           newreno      newreno,cubic,
+                                                                        highspeed,
+                                                                        vegas
+tcp   cong_enabled          rw   newreno,     newreno,     newreno      newreno,cubic,
+                                 cubic,       cubic,                    highspeed,
+                                 highspeed,   highspeed,                vegas
+                                 vegas        vegas
+tcp   ecn                   rw   passive      --           passive      never,passive,
+                                                                        active
+tcp   extra_priv_ports      rw   2049,4045    --           2049,4045    1-65535
+tcp   largest_anon_port     rw   65535        --           65535        32768-65535
+tcp   max_buf               rw   8388608      8388608      1048576      1049600-1073741824
+tcp   recv_buf              rw   1049600      1049600      256000       2048-8388608
+tcp   sack                  rw   active       --           active       never,passive,
+                                                                        active
+tcp   send_buf              rw   1049600      1049600      49152        4096-8388608
+tcp   smallest_anon_port    rw   32768        --           32768        1024-65535
+tcp   smallest_nonpriv_port rw   1024         --           1024         1024-32768

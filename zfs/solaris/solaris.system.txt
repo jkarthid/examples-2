@@ -1,0 +1,84 @@
+* Network Tunning
+set ip:ip_squeue_fanout=1
+set ip:tcp_cwnd_normal=255
+set ndd:tcp_wscale_always = 1
+set ndd:tstamp_if_wscale = 1
+set ndd:tcp_max_buf = 166777216
+
+* scsi timeout
+set sd:sd_io_time = 10
+set sd:sd_inquiry_time=10
+set sd:sd_start_stop_time=20
+
+* There is a known firmware problem with some PLX PCIe switches that can cause
+* excessive CE storms.  This prevents these CEs from being generated.
+*
+set pcie:pcie_aer_ce_mask=1
+
+*
+* Set SATA drives to automatically configure.  We set this on all products -
+* it is harmless if the product has no SATA drives, but useful on generic
+* use products that might be installed on SATA systems.
+*
+set sata:sata_auto_online=1
+set sata:sata_auto_online_heldopen=1
+
+* Tunables to yield highest networking performance for nxge products, or for
+* generic use products that *may* include nxge.
+*
+set nxge:nxge_msi_enable=2
+set nxge:nxge_bcopy_thresh=1024
+set nxge:nxge_cksum_offload=1
+
+
+* Disable GLDv3 CPU bindings to prevent processing of packets getting delayed
+* due to a saturated CPU.
+*
+set mac:mac_cpu_binding_on = 0
+set mac:mac_cpu_socket_binding = 0
+
+
+* Allow our NFS server to support clients with users in more than 16 groups.
+*
+set ngroups_max=1024
+
+* Disable kflt - we have no userland consumers of large pages.
+*
+set kflt_disable=1
+
+* Some platforms leave the software scrubber enabled despite the presence
+* of hardware scrubbing.
+*
+set disable_memscrub=1
+
+
+* Workaround for 15758888
+*
+set idle_cpu_prefer_mwait = 0
+set idle_cpu_no_deep_c = 1
+
+
+* Cluster
+set rpcmod:svc_default_stksize=0x6000
+set ge:ge_intr_mode=0x833
+
+
+* RPC Tunning
+set rpcmod:cotsmaxdupreqs = 4096
+set rpcmod:maxdupreqs = 4096
+set rpcmod:clnt_max_conns = 8
+
+* ZFS Tunning
+set user_reserve_hint_pct = 8
+#set zfs:zfs_vdev_max_pending = 25
+#set zfs:arc_shrink_shift = 10
+
+* NFS Tunning
+set nfs:nfs3_max_transfer_size_cots = 1048576
+set nfs:nfs3_max_transfer_size_clts = 1048576
+set nfs:nfs4_max_transfer_size = 1048576
+set nfs:nfs3_max_transfer_size = 1048576
+set nfs:nfs3_bsize = 1048576
+set nfs:nfs4_bsize = 1048576
+
+* END
