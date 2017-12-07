@@ -44,3 +44,21 @@
         quota: "{{ default_quota }}"
       register: r_zones
       with_sequence: "count={{ node_count }}"
+    - name: get hosts ips
+      shell: |
+        zlogin  {{ item.uuid }} "PATH=$PATH:/native/usr/bin:/native/usr/sbin ipadm show-addr -po addr" | egrep -v "::1/128|127.0.0.1/8"
+      register: r_zones_ips
+      changed_when: false
+      with_items: "{{ r_zones.results }}"
+      when: default_state == "present"
+
+    - name: register hosts
+      add_host:
+        name: "{{ item.0.uuid }}"
+        ansible_host: "{{ item.1.stdout.split('/')[0] }}"
+        groups: nodes
+      with_together:
+        - "{{ r_zones.results }}"
+        - "{{ r_zones_ips.results }}"
+      when: default_state == "present"
+      changed_when: false
