@@ -1,0 +1,46 @@
+- hosts: hypervisors
+  remote_user: root
+  vars:
+    default_brand: lx
+    default_state: present
+    default_lx_image: 23ee2dbc-c155-11e6-ab6d-bf5689f582fd
+    default_joyent_image: 23b267fc-ad02-11e7-94da-53e3d3884fe0
+    default_kernel_version: "3.10"
+    default_quota: 30
+    default_max_physical_memory: 4096
+    default_dns_servers:
+      - "8.8.8.8"
+      - "8.8.4.4"
+    default_max_swap: 8192
+    node_count: 3
+    node_template:
+      alias: "node-"
+      brand: "{{ default_brand | default('joyent') }}"
+      state: "{{ default_state | default('present') }}"
+      kernel_version: "{{ default_kernel_version }}"
+      image_uuid: "{{ default_joyent_image if default_brand == 'joyent' else default_lx_image }}"
+      quota: "{{ default_quota }}"
+  tasks:
+    - name: create zones
+      vmadm:
+        brand: "{{ node_template.brand }}"
+        state: "{{ node_template.state }}"
+        alias: "{{node_template.alias}}{{ item }}"
+        image_uuid: "{{ node_template.image_uuid }}"
+        kernel_version: "{{ node_template.kernel_version }}"
+        max_swap: "{{ default_max_swap }}"
+        max_physical_memory: "{{ default_max_physical_memory }}"
+        nics:
+          - nic_tag: admin
+            ip: dhcp
+            primary: true
+        customer_metadata:
+          root_authorized_keys: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+          user-script: |
+            /usr/sbin/mdata-get root_authorized_keys > ~root/.ssh/authorized_keys
+            /usr/sbin/mdata-get root_authorized_keys > ~admin/.ssh/authorized_keys
+        maintain_resolvers: true
+        resolvers: "{{ default_dns_servers }}"
+        quota: "{{ default_quota }}"
+      register: r_zones
+      with_sequence: "count={{ node_count }}"
