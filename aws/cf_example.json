@@ -1,0 +1,80 @@
+{
+ “AWSTemplateFormatVersion” : “2010-09-09”,
+
+ “Description” : “AWS CloudFormation Sample Template EC2InstanceWithSecurityGroupSample: Create an Amazon EC2 instance running the Amazon Linux AMI. The AMI is chosen based on the us-east-1 region in which the stack is run. This example creates an EC2 security group for the instance to give you SSH access.”,
+
+
+ “Parameters” : {
+   “KeyName”: {
+     “Description” : “Name of an existing EC2 KeyPair to enable SSH access to the instance”,
+     “Type”: “AWS::EC2::KeyPair::KeyName”,
+     “ConstraintDescription” : “must be the name of an existing EC2 KeyPair.”
+   },
+
+   “InstanceType” : {
+     “Description” : “WebServer EC2 instance type”,
+     “Type” : “String”,
+     “Default” : “t2.small”
+   },
+
+   “SSHLocation” : {
+     “Description” : “The IP address range that can be used to SSH to the EC2 instances”,
+     “Type”: “String”,
+     “MinLength”: “9”,
+     “MaxLength”: “18”,
+     “Default”: “0.0.0.0/0”
+  }
+ },
+
+ “Mappings” : {
+   “AWSInstanceType2Arch” : {
+     “t2.small”    : { “Arch” : “PV64”   }
+   },
+
+   “AWSInstanceType2NATArch” : {
+     “t2.small”    : { “Arch” : “NATHVM64”  }
+   }
+,
+   “AWSRegionArch2AMI” : {
+     “us-east-1”        : {“PV64” : “ami-2a69aa47”, “HVM64” : “ami-6869aa05”, “HVMG2” : “ami-22b68b59”}
+   }
+
+ },
+
+ “Resources” : {
+   “EC2Instance” : {
+     “Type” : “AWS::EC2::Instance”,
+     “Properties” : {
+       “InstanceType” : { “Ref” : “InstanceType” },
+       “SecurityGroups” : [ { “Ref” : “InstanceSecurityGroup” } ],
+       “KeyName” : { “Ref” : “KeyName” },
+       “ImageId” : { “Fn::FindInMap” : [ “AWSRegionArch2AMI”, { “Ref” : “AWS::Region” },
+                         { “Fn::FindInMap” : [ “AWSInstanceType2Arch”, { “Ref” : “InstanceType” }, “Arch” ] } ] }
+     }
+   },
+
+   “InstanceSecurityGroup” : {
+     “Type” : “AWS::EC2::SecurityGroup”,
+     “Properties” : {
+       “GroupDescription” : “Enable SSH access via port 22”,
+       “SecurityGroupIngress” : [ {
+         “IpProtocol” : “tcp”,
+         “FromPort” : “22”,
+         “ToPort” : “22”,
+         “CidrIp” : { “Ref” : “SSHLocation”}
+       } ]
+     }
+   }
+ },
+
+ “Outputs” : {
+   “InstanceId” : {
+     “Description” : “InstanceId of the newly created EC2 instance”,
+     “Value” : { “Ref” : “EC2Instance” }
+   },
+   “PublicIP” : {
+     “Description” : “Public IP address of the newly created EC2 instance”,
+     “Value” : { “Fn::GetAtt” : [ “EC2Instance”, “PublicIp” ] }
+   }
+ }
+}
