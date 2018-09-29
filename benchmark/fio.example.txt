@@ -1,3 +1,6 @@
+fio --time_based --name=benchmark --size=120g --runtime=120 --filename=/dev/vdd:/dev/vdc  --randrepeat=0 --iodepth=32 --invalidate=1 --verify=0 --verify_fatal=0 --numjobs=1 --rw=write --blocksize=4k  --ioengine=libaio --direct=1  --group_reporting
+
+
 fio --time_based --name=benchmark --size=10G --runtime=30 --filename=/u03/file1 --ioengine=libaio --randrepeat=0 --iodepth=128 --direct=1 --invalidate=1 --verify=0 --verify_fatal=0 --numjobs=4 --rw=randwrite --blocksize=8k --fsync=1 --group_reporting
 
 fio --time_based --name=benchmark --size=100g --runtime=120 --filename=/u01/file1 --ioengine=libaio --randrepeat=0 --iodepth=128 --direct=1 --invalidate=1 --verify=0 --verify_fatal=0 --numjobs=1 --rw=write --blocksize=8k  --fsync=1 --group_reporting
